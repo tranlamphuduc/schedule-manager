@@ -113,7 +113,12 @@ export default function CategoriesPage() {
       // Update existing category
       console.log('Categories page - Updating category:', editingCategory.id, formData)
 
-      const updatedCategory = CategoryStorage.updateCategory(editingCategory.id, formData)
+      const updatedCategory = CategoryStorage.updateCategory(editingCategory.id, {
+        ...formData,
+        userId: editingCategory.userId,
+        createdAt: editingCategory.createdAt,
+        updatedAt: new Date()
+      })
       if (updatedCategory) {
         const updatedCategories = CategoryStorage.loadCategories()
         setCategories(updatedCategories)
@@ -125,7 +130,12 @@ export default function CategoriesPage() {
       // Add new category
       console.log('Categories page - Adding new category:', formData)
 
-      const newCategory = CategoryStorage.addCategory(formData)
+      const newCategory = CategoryStorage.addCategory({
+        ...formData,
+        userId: 'current-user', // TODO: Get from auth context
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
       const updatedCategories = CategoryStorage.loadCategories()
       setCategories(updatedCategories)
       alert('Danh mục đã được tạo thành công!')
