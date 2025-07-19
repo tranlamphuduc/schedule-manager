@@ -1,12 +1,5 @@
 // Category storage utilities for localStorage management
-
-export interface Category {
-  id: string
-  name: string
-  color: string
-  description?: string
-  isDefault?: boolean
-}
+import { Category } from '@/types'
 
 const STORAGE_KEY_PREFIX = 'schedule-manager-categories'
 

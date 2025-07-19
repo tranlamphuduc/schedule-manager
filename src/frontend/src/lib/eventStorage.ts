@@ -1,23 +1,5 @@
 // Event storage utilities for localStorage management
-
-export interface Event {
-  id: string
-  title: string
-  description?: string
-  startDate: Date
-  endDate: Date
-  allDay: boolean
-  categoryId: string
-  location?: string
-  reminder?: {
-    enabled: boolean
-    minutes: number
-  }
-  repeat?: {
-    type: 'daily' | 'weekly' | 'monthly'
-    endDate: Date
-    dates: Date[] // Array of all dates this event occurs on
-  }
+import { Event } from '@/types'
 }
 
 const STORAGE_KEY_PREFIX = 'schedule-manager-events'
