@@ -37,27 +37,18 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ isLoading: true, error: null })
 
-          // Simple localStorage-based authentication
-          const users = JSON.parse(localStorage.getItem('schedule-manager-users') || '[]')
-          const user = users.find((u: any) => u.email === email)
+          // Use API for authentication
+          const response = await apiClient.login(email, password)
 
-          if (!user) {
-            throw new Error('Email không tồn tại')
-          }
-
-          if (user.password !== password) {
-            throw new Error('Mật khẩu không đúng')
-          }
-
-          // Set current user
-          localStorage.setItem('schedule-manager-current-user', JSON.stringify(user))
+          // Save current user to localStorage for offline access
+          localStorage.setItem('schedule-manager-current-user', JSON.stringify(response.user))
 
           set({
             user: {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              created_at: user.created_at
+              id: response.user.id,
+              email: response.user.email,
+              name: response.user.name,
+              created_at: response.user.created_at
             },
             isAuthenticated: true,
             isLoading: false,
@@ -76,48 +67,18 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ isLoading: true, error: null })
 
-          // Validate input
-          if (!name.trim()) {
-            throw new Error('Tên không được để trống')
-          }
-          if (!email.trim()) {
-            throw new Error('Email không được để trống')
-          }
-          if (!email.includes('@')) {
-            throw new Error('Email không hợp lệ')
-          }
-          if (password.length < 6) {
-            throw new Error('Mật khẩu phải có ít nhất 6 ký tự')
-          }
+          // Use API for registration
+          const response = await apiClient.register(name, email, password)
 
-          // Simple localStorage-based registration
-          const users = JSON.parse(localStorage.getItem('schedule-manager-users') || '[]')
-
-          // Check if email already exists
-          if (users.find((u: any) => u.email === email)) {
-            throw new Error('Email đã được sử dụng')
-          }
-
-          // Create new user
-          const newUser = {
-            id: Date.now().toString(),
-            email: email.trim(),
-            name: name.trim(),
-            password: password,
-            created_at: new Date().toISOString()
-          }
-
-          // Save to localStorage
-          users.push(newUser)
-          localStorage.setItem('schedule-manager-users', JSON.stringify(users))
-          localStorage.setItem('schedule-manager-current-user', JSON.stringify(newUser))
+          // Save current user to localStorage for offline access
+          localStorage.setItem('schedule-manager-current-user', JSON.stringify(response.user))
 
           set({
             user: {
-              id: newUser.id,
-              email: newUser.email,
-              name: newUser.name,
-              created_at: newUser.created_at
+              id: response.user.id,
+              email: response.user.email,
+              name: response.user.name,
+              created_at: response.user.created_at
             },
             isAuthenticated: true,
             isLoading: false,
@@ -133,6 +94,9 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: () => {
+        // Clear API token
+        apiClient.logout()
+
         set({
           user: null,
           isAuthenticated: false,
