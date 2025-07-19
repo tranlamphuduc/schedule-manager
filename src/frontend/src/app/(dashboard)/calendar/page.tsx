@@ -128,11 +128,11 @@ export default function CalendarPage() {
   const getEventsForDate = (date: Date) => {
     return events.filter(event => {
       // Check if event occurs on this date (including repeated events)
-      if (event.repeat && event.repeat.dates) {
-        return event.repeat.dates.some(repeatDate => {
-          const rDate = new Date(repeatDate)
-          return rDate.toDateString() === date.toDateString()
-        })
+      if (event.recurrence) {
+        // For now, just check the main event date
+        // TODO: Implement proper recurrence date calculation
+        const eventDate = new Date(event.startDate)
+        return eventDate.toDateString() === date.toDateString()
       } else {
         const eventDate = new Date(event.startDate)
         return eventDate.toDateString() === date.toDateString()
