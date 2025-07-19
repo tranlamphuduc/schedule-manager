@@ -52,6 +52,6 @@ export const clearCurrentUserData = () => {
 
 // For development/testing - call this in browser console
 if (typeof window !== 'undefined') {
-  (window as any).clearAllUserData = clearAllUserData
-  (window as any).clearCurrentUserData = clearCurrentUserData
+  (window as any).clearAllUserData = clearAllUserData;
+  // (window as any).clearCurrentUserData = clearCurrentUserData;
 }
