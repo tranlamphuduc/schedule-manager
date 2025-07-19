@@ -57,7 +57,7 @@ export const useAuthStore = create<AuthStore>()(
               id: user.id,
               email: user.email,
               name: user.name,
-              createdAt: user.createdAt
+              created_at: user.created_at
             },
             isAuthenticated: true,
             isLoading: false,
