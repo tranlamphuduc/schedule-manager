@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: schedule-manager-db
+    environment:
+      POSTGRES_DB: schedule_manager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - schedule-manager-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: schedule-manager-backend
+    environment:
+      NODE_ENV: development
+      PORT: 5001
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: schedule_manager
+      JWT_SECRET: schedule-manager-jwt-secret-2025-very-secure-key
+      FRONTEND_URL: http://localhost:3000
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+    networks:
+      - schedule-manager-network
+    command: npm run dev
+
+  # Frontend App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: schedule-manager-frontend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: http://localhost:5001/api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - schedule-manager-network
+    command: npm run dev
+
+  # Redis (for caching and sessions)
+  redis:
+    image: redis:7-alpine
+    container_name: schedule-manager-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - schedule-manager-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  schedule-manager-network:
+    driver: bridge

@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "name": "schedule-manager-backend",
+  "builds": [
+    {
+      "src": "src/server.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "src/**",
+          "migrations/**",
+          "package.json",
+          ".env.production"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/health",
+      "dest": "src/server.js"
+    },
+    {
+      "src": "/api-docs",
+      "dest": "src/server.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "src/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "src/server.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "regions": ["sin1"],
+  "functions": {
+    "src/server.js": {
+      "maxDuration": 30
+    }
+  }
+}
