@@ -101,7 +101,7 @@ export const userSettingsSchema = z.object({
   }),
   calendar: z.object({
     defaultView: z.enum(['month', 'week', 'day']).default('month'),
-    weekStartsOn: z.enum([0, 1]).default(1),
+    weekStartsOn: z.number().min(0).max(1).default(1),
     workingHours: z.object({
       start: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Giờ không hợp lệ").default('08:00'),
       end: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Giờ không hợp lệ").default('17:00'),
