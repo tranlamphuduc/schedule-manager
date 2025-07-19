@@ -12,6 +12,7 @@ interface RegisterFormProps {
   onSubmit: (data: RegisterFormData) => Promise<void>
   onSwitchToLogin: () => void
   loading?: boolean
+  error?: string | null
   className?: string
 }
 
@@ -19,6 +20,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   onSubmit,
   onSwitchToLogin,
   loading = false,
+  error = null,
   className
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
