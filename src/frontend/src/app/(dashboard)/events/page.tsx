@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react'
 import EventFormModal from '@/components/events/EventFormModal'
-import { EventStorage, type Event, useEventStorageListener } from '@/lib/eventStorage'
-import { CategoryStorage, type Category, useCategoryStorageListener } from '@/lib/categoryStorage'
+import { EventStorage, useEventStorageListener } from '@/lib/eventStorage'
+import { CategoryStorage, useCategoryStorageListener } from '@/lib/categoryStorage'
+import { Event, Category } from '@/types'
 
 export default function EventsPage() {
   const [showEventForm, setShowEventForm] = useState(false)
