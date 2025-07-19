@@ -58,6 +58,8 @@ export interface Category {
   name: string
   color: string
   userId: string
+  description?: string
+  isDefault?: boolean
   createdAt: Date
   updatedAt: Date
 }
