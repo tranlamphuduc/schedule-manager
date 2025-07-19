@@ -163,7 +163,7 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       // Initialize user from localStorage
-      initializeAuth: () => {
+      initializeAuth: async () => {
         try {
           const currentUser = localStorage.getItem('schedule-manager-current-user')
           if (currentUser) {
