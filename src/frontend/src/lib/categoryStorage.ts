@@ -25,7 +25,16 @@ const getCurrentUserId = (): string => {
 
 // Default category for new users (minimal setup)
 const DEFAULT_CATEGORIES: Category[] = [
-  { id: '1', name: 'Chung', color: '#3b82f6', description: 'Danh mục mặc định', isDefault: true }
+  {
+    id: '1',
+    name: 'Chung',
+    color: '#3b82f6',
+    description: 'Danh mục mặc định',
+    isDefault: true,
+    userId: 'default-user',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
 ]
 
 export const CategoryStorage = {
