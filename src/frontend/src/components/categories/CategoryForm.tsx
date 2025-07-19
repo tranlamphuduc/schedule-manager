@@ -183,11 +183,12 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
               <Input
                 type="text"
                 value={selectedColor}
-                onChange={(e) => handleColorSelect(e.target.value)}
                 placeholder="#3B82F6"
                 disabled={loading}
                 className="flex-1"
-                {...register('color')}
+                {...register('color', {
+                  onChange: (e) => handleColorSelect(e.target.value)
+                })}
               />
             </div>
             
