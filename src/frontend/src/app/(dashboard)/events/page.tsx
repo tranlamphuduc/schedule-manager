@@ -397,15 +397,15 @@ export default function EventsPage() {
                             </div>
                           )}
 
-                          {event.repeat && (
+                          {event.recurrence && (
                             <div>
                               <strong>Lặp lại:</strong><br />
-                              🔄 {event.repeat.type === 'daily' ? 'Hằng ngày' :
-                                   event.repeat.type === 'weekly' ? 'Hằng tuần' :
-                                   event.repeat.type === 'monthly' ? 'Hằng tháng' : 'Tùy chỉnh'}
+                              🔄 {event.recurrence.type === 'daily' ? 'Hằng ngày' :
+                                   event.recurrence.type === 'weekly' ? 'Hằng tuần' :
+                                   event.recurrence.type === 'monthly' ? 'Hằng tháng' : 'Tùy chỉnh'}
                               <br />
                               <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                                {event.repeat.dates?.length || 0} ngày, đến {new Date(event.repeat.endDate).toLocaleDateString('vi-VN')}
+                                Đến {event.recurrence.endDate ? new Date(event.recurrence.endDate).toLocaleDateString('vi-VN') : 'Không giới hạn'}
                               </span>
                             </div>
                           )}
