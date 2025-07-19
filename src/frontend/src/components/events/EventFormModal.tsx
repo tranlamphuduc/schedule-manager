@@ -143,10 +143,10 @@ export default function EventFormModal({
         enabled: true,
         minutes: formData.reminderMinutes
       } : undefined,
-      repeat: formData.repeatEnabled ? {
+      recurrence: formData.repeatEnabled ? {
         type: formData.repeatType as 'daily' | 'weekly' | 'monthly',
-        endDate: new Date(formData.repeatEndDate),
-        dates: generateRepeatDates(formData)
+        interval: 1,
+        endDate: new Date(formData.repeatEndDate)
       } : undefined
     }
 
