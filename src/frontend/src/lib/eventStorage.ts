@@ -1,6 +1,5 @@
 // Event storage utilities for localStorage management
 import { Event } from '@/types'
-}
 
 const STORAGE_KEY_PREFIX = 'schedule-manager-events'
 
