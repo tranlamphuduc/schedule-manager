@@ -104,7 +104,7 @@ export const useAuthStore = create<AuthStore>()(
             email: email.trim(),
             name: name.trim(),
             password: password,
-            createdAt: new Date().toISOString()
+            created_at: new Date().toISOString()
           }
 
           // Save to localStorage
@@ -117,7 +117,7 @@ export const useAuthStore = create<AuthStore>()(
               id: newUser.id,
               email: newUser.email,
               name: newUser.name,
-              createdAt: newUser.createdAt
+              created_at: newUser.created_at
             },
             isAuthenticated: true,
             isLoading: false,
@@ -173,7 +173,7 @@ export const useAuthStore = create<AuthStore>()(
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                createdAt: user.createdAt
+                created_at: user.created_at
               },
               isAuthenticated: true,
             })
