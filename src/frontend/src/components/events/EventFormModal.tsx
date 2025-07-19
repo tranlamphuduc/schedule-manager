@@ -118,6 +118,7 @@ export default function EventFormModal({
       endDate,
       allDay: formData.allDay,
       categoryId: formData.categoryId,
+      userId: event?.userId || 'current-user', // TODO: Get from auth context
       location: formData.location.trim() || undefined,
       reminder: formData.reminderEnabled ? {
         enabled: true,
@@ -127,7 +128,9 @@ export default function EventFormModal({
         type: formData.repeatType as 'daily' | 'weekly' | 'monthly',
         interval: 1,
         endDate: new Date(formData.repeatEndDate)
-      } : undefined
+      } : undefined,
+      createdAt: event?.createdAt || new Date(),
+      updatedAt: new Date()
     }
 
     onSubmit(eventData)
