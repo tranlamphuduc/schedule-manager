@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { EventStorage, type Event, useEventStorageListener } from '@/lib/eventStorage'
-import { CategoryStorage, type Category, useCategoryStorageListener } from '@/lib/categoryStorage'
+import { EventStorage, useEventStorageListener } from '@/lib/eventStorage'
+import { CategoryStorage, useCategoryStorageListener } from '@/lib/categoryStorage'
 import { NotificationStorage } from '@/lib/notificationStorage'
+import { Event, Category } from '@/types'
 
 export default function DashboardPage() {
   const [currentTime, setCurrentTime] = useState(new Date())
