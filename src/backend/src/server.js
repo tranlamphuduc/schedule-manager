@@ -33,6 +33,9 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8080',
   process.env.FRONTEND_URL,
+  'https://schedule-manager-frontend-three.vercel.app',
+  'https://schedule-manager-frontend-git-main-phuduc-projects-36c1004.vercel.app',
+  'https://schedule-manager-frontend-kom08a3s-phuduc-projects-36c1004.vercel.app',
   'https://your-app.vercel.app' // Will be updated with actual domain
 ].filter(Boolean);
 
