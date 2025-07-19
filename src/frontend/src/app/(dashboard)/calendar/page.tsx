@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react'
 import EventFormModal from '@/components/events/EventFormModal'
-import { EventStorage, type Event, useEventStorageListener } from '@/lib/eventStorage'
-import { CategoryStorage, type Category, useCategoryStorageListener } from '@/lib/categoryStorage'
+import { EventStorage, useEventStorageListener } from '@/lib/eventStorage'
+import { CategoryStorage, useCategoryStorageListener } from '@/lib/categoryStorage'
 import { NotificationStorage } from '@/lib/notificationStorage'
+import { Event, Category } from '@/types'
 
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
