@@ -211,15 +211,13 @@ export const NotificationStorage = {
 
     // Process all events (including repeat events)
     events.forEach(event => {
-      if (event.repeat && event.repeat.dates) {
-        // Handle repeat events - check each occurrence
-        event.repeat.dates.forEach((dateStr: string) => {
-          const eventDate = new Date(dateStr)
-          const eventStart = new Date(eventDate)
-          const eventEnd = new Date(eventDate.getTime() + (new Date(event.endDate).getTime() - new Date(event.startDate).getTime()))
+      if (event.recurrence) {
+        // Handle recurrence events - for now just check main event
+        // TODO: Implement proper recurrence date calculation
+        const eventStart = new Date(event.startDate)
+        const eventEnd = new Date(event.endDate)
 
-          this.processEventForNotification(event, eventStart, eventEnd, now, existingNotifications, newNotifications)
-        })
+        this.processEventForNotification(event, eventStart, eventEnd, now, existingNotifications, newNotifications)
       } else {
         // Handle single events
         const eventStart = new Date(event.startDate)

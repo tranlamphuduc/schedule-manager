@@ -42,10 +42,9 @@ export const EventStorage = {
           ...event,
           startDate: new Date(event.startDate),
           endDate: new Date(event.endDate),
-          repeat: event.repeat ? {
-            ...event.repeat,
-            endDate: new Date(event.repeat.endDate),
-            dates: event.repeat.dates?.map((date: string) => new Date(date)) || []
+          recurrence: event.recurrence ? {
+            ...event.recurrence,
+            endDate: event.recurrence.endDate ? new Date(event.recurrence.endDate) : undefined
           } : undefined
         }))
         console.log('Parsed events:', parsedEvents)
@@ -137,12 +136,11 @@ export const EventStorage = {
     const events = this.loadEvents()
     return events.filter(event => {
       // Check if event occurs on this date
-      if (event.repeat && event.repeat.dates) {
-        // For repeated events, check if date is in the repeat dates array
-        return event.repeat.dates.some(repeatDate => {
-          const rDate = new Date(repeatDate)
-          return rDate.toDateString() === date.toDateString()
-        })
+      if (event.recurrence) {
+        // For now, just check the main event date
+        // TODO: Implement proper recurrence date calculation
+        const eventDate = new Date(event.startDate)
+        return eventDate.toDateString() === date.toDateString()
       } else {
         // For single events, check the start date
         const eventDate = new Date(event.startDate)
@@ -153,11 +151,11 @@ export const EventStorage = {
 
   // Helper function to check if an event occurs on a specific date
   eventOccursOnDate(event: Event, date: Date): boolean {
-    if (event.repeat && event.repeat.dates) {
-      return event.repeat.dates.some(repeatDate => {
-        const rDate = new Date(repeatDate)
-        return rDate.toDateString() === date.toDateString()
-      })
+    if (event.recurrence) {
+      // For now, just check the main event date
+      // TODO: Implement proper recurrence date calculation
+      const eventDate = new Date(event.startDate)
+      return eventDate.toDateString() === date.toDateString()
     } else {
       const eventDate = new Date(event.startDate)
       return eventDate.toDateString() === date.toDateString()
@@ -166,8 +164,10 @@ export const EventStorage = {
 
   // Get all dates an event occurs on
   getEventDates(event: Event): Date[] {
-    if (event.repeat && event.repeat.dates) {
-      return event.repeat.dates.map(date => new Date(date))
+    if (event.recurrence) {
+      // For now, just return the main event date
+      // TODO: Implement proper recurrence date calculation
+      return [new Date(event.startDate)]
     } else {
       return [new Date(event.startDate)]
     }
