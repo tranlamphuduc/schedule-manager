@@ -87,11 +87,11 @@ export default function DashboardPage() {
 
     return events.filter(event => {
       // Check if event occurs this week (including repeated events)
-      if (event.repeat && event.repeat.dates) {
-        return event.repeat.dates.some(repeatDate => {
-          const rDate = new Date(repeatDate)
-          return rDate >= startOfWeek && rDate <= endOfWeek
-        })
+      if (event.recurrence) {
+        // For now, just check the main event date
+        // TODO: Implement proper recurrence date calculation
+        const eventDate = new Date(event.startDate)
+        return eventDate >= startOfWeek && eventDate <= endOfWeek
       } else {
         const eventDate = new Date(event.startDate)
         return eventDate >= startOfWeek && eventDate <= endOfWeek
