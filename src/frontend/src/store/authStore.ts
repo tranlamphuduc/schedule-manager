@@ -183,6 +183,20 @@ export const useAuthStore = create<AuthStore>()(
           localStorage.removeItem('schedule-manager-current-user')
         }
       },
+
+      // Refresh user data from API
+      refreshUser: async () => {
+        try {
+          const { user } = get()
+          if (user) {
+            // TODO: Implement API call to refresh user data
+            // const refreshedUser = await apiClient.getUser(user.id)
+            // set({ user: refreshedUser })
+          }
+        } catch (error) {
+          console.error('Error refreshing user:', error)
+        }
+      },
     }),
     {
       name: 'auth-storage',
