@@ -496,7 +496,7 @@ export default function ProfilePage() {
               color: '#8b5cf6',
               marginBottom: '0.25rem'
             }}>
-              {user?.createdAt ? Math.floor((Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24)) : 0}
+              {user?.created_at ? Math.floor((Date.now() - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24)) : 0}
             </div>
             <div style={{
               fontSize: '0.875rem',
