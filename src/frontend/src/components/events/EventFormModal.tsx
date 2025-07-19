@@ -1,27 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-
-interface Event {
-  id: string
-  title: string
-  description?: string
-  startDate: Date
-  endDate: Date
-  allDay: boolean
-  categoryId: string
-  location?: string
-  reminder?: {
-    enabled: boolean
-    minutes: number
-  }
-}
-
-interface Category {
-  id: string
-  name: string
-  color: string
-}
+import { Event, Category } from '@/types'
 
 interface EventFormProps {
   event?: Event | null
