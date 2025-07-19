@@ -1,8 +1,9 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { CategoryStorage, type Category, useCategoryStorageListener } from '@/lib/categoryStorage'
-import { EventStorage, type Event, useEventStorageListener } from '@/lib/eventStorage'
+import { CategoryStorage, useCategoryStorageListener } from '@/lib/categoryStorage'
+import { EventStorage, useEventStorageListener } from '@/lib/eventStorage'
+import { Category, Event } from '@/types'
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
