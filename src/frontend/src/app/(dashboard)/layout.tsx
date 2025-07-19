@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import AuthGuard from '@/components/auth/AuthGuard'
+import { useAuthStore } from '@/store/authStore'
 
 export default function DashboardLayout({
   children,
@@ -10,19 +12,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [currentUser, setCurrentUser] = useState<any>(null)
-
-  // Load current user info
-  useEffect(() => {
-    const userInfo = localStorage.getItem('schedule-manager-current-user')
-    if (userInfo) {
-      try {
-        setCurrentUser(JSON.parse(userInfo))
-      } catch (error) {
-        console.error('Error parsing user info:', error)
-      }
-    }
-  }, [])
+  const { user, logout } = useAuthStore()
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: '📊' },
@@ -34,31 +24,25 @@ export default function DashboardLayout({
   ]
 
   const handleLogout = () => {
-    // Clear user data from localStorage
-    localStorage.removeItem('schedule-manager-current-user')
-    console.log('User logged out')
-
-    // Note: We don't clear user-specific events and categories data
-    // as they should persist for when user logs back in
-
-    // Redirect to login page
+    logout()
     router.push('/login')
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f1f5f9' }}>
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 40
-          }}
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+    <AuthGuard>
+      <div style={{ minHeight: '100vh', backgroundColor: '#f1f5f9' }}>
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 40
+            }}
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
       {/* Sidebar */}
       <div style={{
@@ -177,7 +161,7 @@ export default function DashboardLayout({
           </div>
 
           {/* User Info */}
-          {currentUser && (
+          {user && (
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -188,7 +172,7 @@ export default function DashboardLayout({
               border: '1px solid #e2e8f0'
             }}>
               <span style={{ fontSize: '0.875rem', color: '#64748b' }}>
-                👤 {currentUser.email}
+                👤 {user.email}
               </span>
             </div>
           )}
@@ -214,5 +198,6 @@ export default function DashboardLayout({
         </main>
       </div>
     </div>
+    </AuthGuard>
   )
 }
