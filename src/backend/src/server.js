@@ -36,6 +36,7 @@ const allowedOrigins = [
   'https://schedule-manager-frontend-three.vercel.app',
   'https://schedule-manager-frontend-git-main-phuduc-projects-36c1004.vercel.app',
   'https://schedule-manager-frontend-kom08a3s-phuduc-projects-36c1004.vercel.app',
+  'https://schedule-manager-frontend-f1884uq30-phuducs-projects-36c10014.vercel.app',
   'https://your-app.vercel.app' // Will be updated with actual domain
 ].filter(Boolean);
 
@@ -44,7 +45,13 @@ app.use(cors({
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
 
+    // Check if origin is in allowed list
     if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Allow all Vercel preview deployments
+    if (origin && origin.includes('.vercel.app')) {
       return callback(null, true);
     }
 
