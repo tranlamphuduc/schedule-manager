@@ -100,11 +100,30 @@ app.use(morgan('combined'));
  */
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   });
+});
+
+// Database test endpoint
+app.get('/test-db', async (req, res) => {
+  try {
+    const db = require('./config/database');
+    const result = await db.raw('SELECT 1 as test');
+    res.json({
+      status: 'Database connected',
+      result: result.rows[0],
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'Database connection failed',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Swagger documentation
