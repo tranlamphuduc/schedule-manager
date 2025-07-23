@@ -12,7 +12,7 @@ const eventSchema = Joi.object({
   start_date: Joi.date().required(),
   end_date: Joi.date().required(),
   all_day: Joi.boolean().default(false),
-  category_id: Joi.string().required(),
+  category_id: Joi.string().allow('').optional(),
   location: Joi.string().max(200).allow(''),
   reminder: Joi.object({
     enabled: Joi.boolean().default(false),
@@ -154,13 +154,15 @@ router.post('/', auth, async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    // Check if category exists and belongs to user
-    const category = await db('categories')
-      .where({ id: value.category_id, user_id: req.userId })
-      .first();
+    // Check if category exists and belongs to user (only if category_id is provided)
+    if (value.category_id) {
+      const category = await db('categories')
+        .where({ id: value.category_id, user_id: req.userId })
+        .first();
 
-    if (!category) {
-      return res.status(400).json({ error: 'Category không tồn tại' });
+      if (!category) {
+        return res.status(400).json({ error: 'Category không tồn tại' });
+      }
     }
 
     // Prepare event data
