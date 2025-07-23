@@ -21,9 +21,32 @@ export default function CalendarPage() {
 
   // Load categories on component mount
   React.useEffect(() => {
-    const loadedCategories = CategoryStorage.loadCategories()
-    setCategories(loadedCategories)
-    console.log('Calendar - Loaded categories:', loadedCategories)
+    const loadCategories = async () => {
+      try {
+        // Try API first
+        const response = await apiClient.getCategories()
+        const apiCategories = response.categories.map((cat: any) => ({
+          ...cat,
+          categoryId: cat.id,
+          userId: cat.user_id,
+          isDefault: cat.is_default,
+          createdAt: new Date(cat.created_at),
+          updatedAt: new Date(cat.updated_at)
+        }))
+
+        setCategories(apiCategories)
+        console.log('Calendar - Loaded categories from API:', apiCategories)
+      } catch (error) {
+        console.error('API failed, using localStorage fallback:', error)
+
+        // Fallback to localStorage
+        const loadedCategories = CategoryStorage.loadCategories()
+        setCategories(loadedCategories)
+        console.log('Calendar - Loaded categories from localStorage:', loadedCategories)
+      }
+    }
+
+    loadCategories()
   }, [])
 
   // Listen for category storage changes

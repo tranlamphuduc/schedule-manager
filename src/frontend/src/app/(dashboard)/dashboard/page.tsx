@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { EventStorage, useEventStorageListener } from '@/lib/eventStorage'
 import { CategoryStorage, useCategoryStorageListener } from '@/lib/categoryStorage'
 import { NotificationStorage } from '@/lib/notificationStorage'
+import { apiClient } from '@/lib/api'
 import { Event, Category } from '@/types'
 
 export default function DashboardPage() {
@@ -19,16 +20,56 @@ export default function DashboardPage() {
 
   // Load events and categories on component mount
   useEffect(() => {
-    const loadedEvents = EventStorage.loadEvents()
-    const loadedCategories = CategoryStorage.loadCategories()
-    setEvents(loadedEvents)
-    setCategories(loadedCategories)
+    const loadData = async () => {
+      try {
+        // Try API first for categories
+        const categoriesResponse = await apiClient.getCategories()
+        const apiCategories = categoriesResponse.categories.map((cat: any) => ({
+          ...cat,
+          categoryId: cat.id,
+          userId: cat.user_id,
+          isDefault: cat.is_default,
+          createdAt: new Date(cat.created_at),
+          updatedAt: new Date(cat.updated_at)
+        }))
 
-    // Generate notifications for current events
-    NotificationStorage.generateEventNotifications(loadedEvents)
+        setCategories(apiCategories)
+        console.log('Dashboard - Loaded categories from API:', apiCategories)
 
-    console.log('Dashboard - Loaded events:', loadedEvents)
-    console.log('Dashboard - Loaded categories:', loadedCategories)
+        // Try API for events
+        const eventsResponse = await apiClient.getEvents()
+        const apiEvents = eventsResponse.events.map((event: any) => ({
+          ...event,
+          startDate: new Date(event.start_date),
+          endDate: new Date(event.end_date),
+          categoryId: event.category_id,
+          userId: event.user_id,
+          recurrence: event.repeat
+        }))
+
+        setEvents(apiEvents)
+        console.log('Dashboard - Loaded events from API:', apiEvents)
+
+        // Generate notifications for current events
+        NotificationStorage.generateEventNotifications(apiEvents)
+      } catch (error) {
+        console.error('API failed, using localStorage fallback:', error)
+
+        // Fallback to localStorage
+        const loadedEvents = EventStorage.loadEvents()
+        const loadedCategories = CategoryStorage.loadCategories()
+        setEvents(loadedEvents)
+        setCategories(loadedCategories)
+
+        // Generate notifications for current events
+        NotificationStorage.generateEventNotifications(loadedEvents)
+
+        console.log('Dashboard - Loaded events from localStorage:', loadedEvents)
+        console.log('Dashboard - Loaded categories from localStorage:', loadedCategories)
+      }
+    }
+
+    loadData()
   }, [])
 
   // Listen for storage changes
