@@ -85,7 +85,11 @@ export default function EventsPage() {
         category_id: eventData.categoryId,
         location: eventData.location,
         reminder: eventData.reminder,
-        repeat: eventData.recurrence
+        repeat: eventData.recurrence ? {
+          type: eventData.recurrence.type as 'daily' | 'weekly' | 'monthly',
+          end_date: eventData.recurrence.endDate || eventData.endDate,
+          dates: [] // Will be calculated by backend
+        } : undefined
       })
 
       // Add to local state

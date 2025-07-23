@@ -170,8 +170,18 @@ class ApiClient {
     return this.request<{ event: Event }>(`/events/${id}`)
   }
 
-  async createEvent(eventData: Omit<Event, 'id' | 'user_id' | 'created_at' | 'updated_at'>) {
-    return this.request<{ message: string; event: Event }>('/events', {
+  async createEvent(eventData: {
+    title: string;
+    description?: string;
+    start_date: Date;
+    end_date: Date;
+    all_day: boolean;
+    category_id: string;
+    location?: string;
+    reminder?: { enabled: boolean; minutes: number } | null;
+    repeat?: { type: 'daily' | 'weekly' | 'monthly'; end_date: Date; dates: Date[] } | null;
+  }) {
+    return this.request<{ message: string; event: any }>('/events', {
       method: 'POST',
       body: JSON.stringify(eventData),
     })
