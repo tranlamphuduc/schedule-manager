@@ -33,9 +33,34 @@ export default function EventsPage() {
 
   // Load events on component mount
   React.useEffect(() => {
-    const loadedEvents = EventStorage.loadEvents()
-    setEvents(loadedEvents)
-    console.log('Events page - Loaded events:', loadedEvents)
+    const loadEvents = async () => {
+      try {
+        // Try API first
+        const { getEvents } = await import('@/lib/api')
+        const response = await getEvents()
+
+        const apiEvents = response.events.map((event: any) => ({
+          ...event,
+          startDate: new Date(event.start_date),
+          endDate: new Date(event.end_date),
+          categoryId: event.category_id,
+          userId: event.user_id,
+          recurrence: event.repeat
+        }))
+
+        setEvents(apiEvents)
+        console.log('Events page - Loaded events from API:', apiEvents)
+      } catch (error) {
+        console.error('API failed, using localStorage fallback:', error)
+
+        // Fallback to localStorage
+        const loadedEvents = EventStorage.loadEvents()
+        setEvents(loadedEvents)
+        console.log('Events page - Loaded events from localStorage:', loadedEvents)
+      }
+    }
+
+    loadEvents()
   }, [])
 
   // Listen for storage changes
@@ -45,14 +70,45 @@ export default function EventsPage() {
   })
 
   // Event handlers
-  const handleAddEvent = (eventData: Omit<Event, 'id'>) => {
-    console.log('Events page - Adding new event:', eventData)
+  const handleAddEvent = async (eventData: Omit<Event, 'id'>) => {
+    try {
+      console.log('Events page - Adding new event:', eventData)
 
-    const newEvent = EventStorage.addEvent(eventData)
-    const updatedEvents = EventStorage.loadEvents()
-    setEvents(updatedEvents)
+      // Try API first
+      const { createEvent } = await import('@/lib/api')
+      const response = await createEvent({
+        title: eventData.title,
+        description: eventData.description,
+        start_date: eventData.startDate,
+        end_date: eventData.endDate,
+        all_day: eventData.allDay,
+        category_id: eventData.categoryId,
+        location: eventData.location,
+        reminder: eventData.reminder,
+        repeat: eventData.recurrence
+      })
 
-    alert('Sự kiện đã được tạo thành công!')
+      // Add to local state
+      const newEvent = {
+        ...response.event,
+        startDate: new Date(response.event.start_date),
+        endDate: new Date(response.event.end_date),
+        categoryId: response.event.category_id,
+        userId: response.event.user_id,
+        recurrence: response.event.repeat
+      }
+
+      setEvents(prev => [...prev, newEvent])
+      alert('Sự kiện đã được tạo thành công!')
+    } catch (error) {
+      console.error('API failed, using localStorage fallback:', error)
+
+      // Fallback to localStorage
+      const newEvent = EventStorage.addEvent(eventData)
+      const updatedEvents = EventStorage.loadEvents()
+      setEvents(updatedEvents)
+      alert('Sự kiện đã được tạo thành công (offline)!')
+    }
   }
 
   const handleEditEvent = (eventData: Omit<Event, 'id'>) => {

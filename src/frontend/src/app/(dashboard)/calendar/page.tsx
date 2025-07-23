@@ -48,17 +48,53 @@ export default function CalendarPage() {
   })
 
   // Event handlers
-  const handleAddEvent = (eventData: Omit<Event, 'id'>) => {
-    console.log('Calendar - Adding new event:', eventData)
+  const handleAddEvent = async (eventData: Omit<Event, 'id'>) => {
+    try {
+      console.log('Calendar - Adding new event:', eventData)
 
-    const newEvent = EventStorage.addEvent(eventData)
-    const updatedEvents = EventStorage.loadEvents()
-    setEvents(updatedEvents)
+      // Try API first
+      const { createEvent } = await import('@/lib/api')
+      const response = await createEvent({
+        title: eventData.title,
+        description: eventData.description,
+        start_date: eventData.startDate,
+        end_date: eventData.endDate,
+        all_day: eventData.allDay,
+        category_id: eventData.categoryId,
+        location: eventData.location,
+        reminder: eventData.reminder,
+        repeat: eventData.recurrence
+      })
 
-    // Generate notifications for the new event
-    NotificationStorage.generateEventNotifications(updatedEvents)
+      // Add to local state
+      const newEvent = {
+        ...response.event,
+        startDate: new Date(response.event.start_date),
+        endDate: new Date(response.event.end_date),
+        categoryId: response.event.category_id,
+        userId: response.event.user_id,
+        recurrence: response.event.repeat
+      }
 
-    alert('Sự kiện đã được tạo thành công!')
+      setEvents(prev => [...prev, newEvent])
+
+      // Generate notifications for the new event
+      NotificationStorage.generateEventNotifications([...events, newEvent])
+
+      alert('Sự kiện đã được tạo thành công!')
+    } catch (error) {
+      console.error('API failed, using localStorage fallback:', error)
+
+      // Fallback to localStorage
+      const newEvent = EventStorage.addEvent(eventData)
+      const updatedEvents = EventStorage.loadEvents()
+      setEvents(updatedEvents)
+
+      // Generate notifications for the new event
+      NotificationStorage.generateEventNotifications(updatedEvents)
+
+      alert('Sự kiện đã được tạo thành công (offline)!')
+    }
   }
 
   const handleEditEvent = (eventData: Omit<Event, 'id'>) => {

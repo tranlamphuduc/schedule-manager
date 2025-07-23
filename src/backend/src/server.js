@@ -126,6 +126,33 @@ app.get('/test-db', async (req, res) => {
   }
 });
 
+// Direct connection test
+app.get('/test-direct', async (req, res) => {
+  try {
+    const { testDirectConnection } = require('../test-direct-connection');
+    const result = await testDirectConnection();
+
+    if (result.success) {
+      res.json({
+        status: 'Direct connection successful',
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.status(500).json({
+        status: 'Direct connection failed',
+        error: result.error,
+        timestamp: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 'Direct connection test failed',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Swagger documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
   explorer: true,
