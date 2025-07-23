@@ -28,11 +28,19 @@ export default function CategoriesPage() {
         setCategories(apiCategories)
         console.log('Categories page - Loaded categories from API:', apiCategories)
 
-        // Skip events API for now due to 500 error
-        console.log('Categories page - Skipping events API due to server error')
-        const loadedEvents = EventStorage.loadEvents()
-        setEvents(loadedEvents)
-        console.log('Categories page - Loaded events from localStorage:', loadedEvents)
+        // Try API for events
+        const eventsResponse = await apiClient.getEvents()
+        const apiEvents = eventsResponse.events.map((event: any) => ({
+          ...event,
+          startDate: new Date(event.start_date),
+          endDate: new Date(event.end_date),
+          categoryId: event.category_id,
+          userId: event.user_id,
+          recurrence: event.repeat
+        }))
+
+        setEvents(apiEvents)
+        console.log('Categories page - Loaded events from API:', apiEvents)
       } catch (error) {
         console.error('API failed, using localStorage fallback:', error)
 

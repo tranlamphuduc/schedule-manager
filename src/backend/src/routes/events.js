@@ -104,12 +104,23 @@ router.get('/', auth, async (req, res) => {
 
     const events = await query;
 
-    // Parse JSON fields
-    const parsedEvents = events.map(event => ({
-      ...event,
-      reminder: event.reminder ? JSON.parse(event.reminder) : null,
-      repeat: event.repeat ? JSON.parse(event.repeat) : null
-    }));
+    // Parse JSON fields safely
+    const parsedEvents = events.map(event => {
+      try {
+        return {
+          ...event,
+          reminder: event.reminder ? (typeof event.reminder === 'string' ? JSON.parse(event.reminder) : event.reminder) : null,
+          repeat: event.repeat ? (typeof event.repeat === 'string' ? JSON.parse(event.repeat) : event.repeat) : null
+        };
+      } catch (parseError) {
+        console.error('JSON parse error for event:', event.id, parseError);
+        return {
+          ...event,
+          reminder: null,
+          repeat: null
+        };
+      }
+    });
 
     res.json({ events: parsedEvents });
 
@@ -130,11 +141,13 @@ router.get('/:id', auth, async (req, res) => {
       return res.status(404).json({ error: 'Event không tồn tại' });
     }
 
-    // Parse JSON fields
+    // Parse JSON fields safely
     const parsedEvent = {
       ...event,
-      reminder: event.reminder ? JSON.parse(event.reminder) : null,
-      repeat: event.repeat ? JSON.parse(event.repeat) : null
+      reminder: event.reminder ?
+        (typeof event.reminder === 'string' ? JSON.parse(event.reminder) : event.reminder) : null,
+      repeat: event.repeat ?
+        (typeof event.repeat === 'string' ? JSON.parse(event.repeat) : event.repeat) : null
     };
 
     res.json({ event: parsedEvent });
@@ -184,11 +197,13 @@ router.post('/', auth, async (req, res) => {
       .where({ id: eventId.id || eventId })
       .first();
 
-    // Parse JSON fields
+    // Parse JSON fields safely
     const parsedEvent = {
       ...createdEvent,
-      reminder: createdEvent.reminder ? JSON.parse(createdEvent.reminder) : null,
-      repeat: createdEvent.repeat ? JSON.parse(createdEvent.repeat) : null
+      reminder: createdEvent.reminder ?
+        (typeof createdEvent.reminder === 'string' ? JSON.parse(createdEvent.reminder) : createdEvent.reminder) : null,
+      repeat: createdEvent.repeat ?
+        (typeof createdEvent.repeat === 'string' ? JSON.parse(createdEvent.repeat) : createdEvent.repeat) : null
     };
 
     res.status(201).json({
@@ -247,11 +262,13 @@ router.put('/:id', auth, async (req, res) => {
       .where({ id: req.params.id })
       .first();
 
-    // Parse JSON fields
+    // Parse JSON fields safely
     const parsedEvent = {
       ...updatedEvent,
-      reminder: updatedEvent.reminder ? JSON.parse(updatedEvent.reminder) : null,
-      repeat: updatedEvent.repeat ? JSON.parse(updatedEvent.repeat) : null
+      reminder: updatedEvent.reminder ?
+        (typeof updatedEvent.reminder === 'string' ? JSON.parse(updatedEvent.reminder) : updatedEvent.reminder) : null,
+      repeat: updatedEvent.repeat ?
+        (typeof updatedEvent.repeat === 'string' ? JSON.parse(updatedEvent.repeat) : updatedEvent.repeat) : null
     };
 
     res.json({
