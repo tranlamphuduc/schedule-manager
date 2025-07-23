@@ -59,27 +59,14 @@ export default function EventsPage() {
   React.useEffect(() => {
     const loadEvents = async () => {
       try {
-        // Try API first
-        const response = await apiClient.getEvents()
-
-        const apiEvents = response.events.map((event: any) => ({
-          ...event,
-          startDate: new Date(event.start_date),
-          endDate: new Date(event.end_date),
-          categoryId: event.category_id,
-          userId: event.user_id,
-          recurrence: event.repeat
-        }))
-
-        setEvents(apiEvents)
-        console.log('Events page - Loaded events from API:', apiEvents)
-      } catch (error) {
-        console.error('API failed, using localStorage fallback:', error)
-
-        // Fallback to localStorage
+        // Skip API for now due to 500 error, use localStorage directly
+        console.log('Events page - Using localStorage due to API server error')
         const loadedEvents = EventStorage.loadEvents()
         setEvents(loadedEvents)
         console.log('Events page - Loaded events from localStorage:', loadedEvents)
+      } catch (error) {
+        console.error('Error loading events from localStorage:', error)
+        setEvents([])
       }
     }
 
