@@ -30,7 +30,7 @@ export default function EventFormModal({
              selectedDate ? new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000 + 3600000).toISOString().slice(0, 16) :
              new Date(Date.now() + 3600000).toISOString().slice(0, 16),
     allDay: event?.allDay || false,
-    categoryId: event?.categoryId || (categories[0]?.id || ''),
+    categoryId: event?.categoryId || (categories.length > 0 ? categories[0].id : ''),
     location: event?.location || '',
     reminderEnabled: event?.reminder?.enabled || false,
     reminderMinutes: event?.reminder?.minutes || 15,
@@ -43,6 +43,16 @@ export default function EventFormModal({
     repeatEndTime: '10:00',
     repeatDays: [] as string[] // For weekly repeat (not implemented yet)
   })
+
+  // Update categoryId when categories are loaded
+  React.useEffect(() => {
+    if (categories.length > 0 && !formData.categoryId && !event) {
+      setFormData(prev => ({
+        ...prev,
+        categoryId: categories[0].id
+      }))
+    }
+  }, [categories, formData.categoryId, event])
 
   const reminderOptions = [
     { value: 0, label: 'Khi sự kiện bắt đầu' },
