@@ -24,7 +24,9 @@ export default function CalendarPage() {
     const loadCategories = async () => {
       try {
         // Try API first
+        console.log('Calendar - Attempting to load categories from API...')
         const response = await apiClient.getCategories()
+        console.log('Calendar - API response:', response)
         const apiCategories = response.categories.map((cat: any) => ({
           ...cat,
           categoryId: cat.id,
