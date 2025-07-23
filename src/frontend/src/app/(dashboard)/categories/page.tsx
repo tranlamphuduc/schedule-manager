@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { CategoryStorage, useCategoryStorageListener } from '@/lib/categoryStorage'
 import { EventStorage, useEventStorageListener } from '@/lib/eventStorage'
 import { Category, Event } from '@/types'
+import { apiClient } from '@/lib/api'
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
@@ -11,12 +12,49 @@ export default function CategoriesPage() {
 
   // Load categories and events on component mount
   useEffect(() => {
-    const loadedCategories = CategoryStorage.loadCategories()
-    const loadedEvents = EventStorage.loadEvents()
-    setCategories(loadedCategories)
-    setEvents(loadedEvents)
-    console.log('Categories page - Loaded categories:', loadedCategories)
-    console.log('Categories page - Loaded events:', loadedEvents)
+    const loadData = async () => {
+      try {
+        // Try API first for categories
+        const categoriesResponse = await apiClient.getCategories()
+        const apiCategories = categoriesResponse.categories.map((cat: any) => ({
+          ...cat,
+          categoryId: cat.id,
+          userId: cat.user_id,
+          isDefault: cat.is_default,
+          createdAt: new Date(cat.created_at),
+          updatedAt: new Date(cat.updated_at)
+        }))
+
+        setCategories(apiCategories)
+        console.log('Categories page - Loaded categories from API:', apiCategories)
+
+        // Try API for events
+        const eventsResponse = await apiClient.getEvents()
+        const apiEvents = eventsResponse.events.map((event: any) => ({
+          ...event,
+          startDate: new Date(event.start_date),
+          endDate: new Date(event.end_date),
+          categoryId: event.category_id,
+          userId: event.user_id,
+          recurrence: event.repeat
+        }))
+
+        setEvents(apiEvents)
+        console.log('Categories page - Loaded events from API:', apiEvents)
+      } catch (error) {
+        console.error('API failed, using localStorage fallback:', error)
+
+        // Fallback to localStorage
+        const loadedCategories = CategoryStorage.loadCategories()
+        const loadedEvents = EventStorage.loadEvents()
+        setCategories(loadedCategories)
+        setEvents(loadedEvents)
+        console.log('Categories page - Loaded categories from localStorage:', loadedCategories)
+        console.log('Categories page - Loaded events from localStorage:', loadedEvents)
+      }
+    }
+
+    loadData()
   }, [])
 
   // Listen for storage changes
@@ -101,7 +139,7 @@ export default function CategoriesPage() {
 
 
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formData.name.trim()) {
@@ -130,15 +168,41 @@ export default function CategoriesPage() {
       // Add new category
       console.log('Categories page - Adding new category:', formData)
 
-      const newCategory = CategoryStorage.addCategory({
-        ...formData,
-        userId: 'current-user', // TODO: Get from auth context
-        createdAt: new Date(),
-        updatedAt: new Date()
-      })
-      const updatedCategories = CategoryStorage.loadCategories()
-      setCategories(updatedCategories)
-      alert('Danh mục đã được tạo thành công!')
+      try {
+        // Try API first
+        const response = await apiClient.createCategory({
+          name: formData.name,
+          color: formData.color,
+          description: formData.description,
+          is_default: false
+        })
+
+        // Add to local state
+        const newCategory = {
+          ...response.category,
+          categoryId: response.category.id,
+          userId: response.category.user_id,
+          isDefault: response.category.is_default,
+          createdAt: new Date(response.category.created_at),
+          updatedAt: new Date(response.category.updated_at)
+        }
+
+        setCategories(prev => [...prev, newCategory])
+        alert('Danh mục đã được tạo thành công!')
+      } catch (error) {
+        console.error('API failed, using localStorage fallback:', error)
+
+        // Fallback to localStorage
+        const newCategory = CategoryStorage.addCategory({
+          ...formData,
+          userId: 'current-user',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        const updatedCategories = CategoryStorage.loadCategories()
+        setCategories(updatedCategories)
+        alert('Danh mục đã được tạo thành công (offline)!')
+      }
     }
 
     setShowForm(false)

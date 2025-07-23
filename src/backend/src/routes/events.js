@@ -169,6 +169,7 @@ router.post('/', auth, async (req, res) => {
     const eventData = {
       ...value,
       user_id: req.userId,
+      category_id: value.category_id || null, // Convert empty string to null for UUID field
       reminder: value.reminder ? JSON.stringify(value.reminder) : null,
       repeat: value.repeat ? JSON.stringify(value.repeat) : null,
       created_at: new Date(),
