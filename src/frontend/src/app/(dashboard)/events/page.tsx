@@ -5,6 +5,7 @@ import EventFormModal from '@/components/events/EventFormModal'
 import { EventStorage, useEventStorageListener } from '@/lib/eventStorage'
 import { CategoryStorage, useCategoryStorageListener } from '@/lib/categoryStorage'
 import { Event, Category } from '@/types'
+import { apiClient } from '@/lib/api'
 
 export default function EventsPage() {
   const [showEventForm, setShowEventForm] = useState(false)
@@ -36,8 +37,7 @@ export default function EventsPage() {
     const loadEvents = async () => {
       try {
         // Try API first
-        const { getEvents } = await import('@/lib/api')
-        const response = await getEvents()
+        const response = await apiClient.getEvents()
 
         const apiEvents = response.events.map((event: any) => ({
           ...event,
@@ -75,8 +75,7 @@ export default function EventsPage() {
       console.log('Events page - Adding new event:', eventData)
 
       // Try API first
-      const { createEvent } = await import('@/lib/api')
-      const response = await createEvent({
+      const response = await apiClient.createEvent({
         title: eventData.title,
         description: eventData.description,
         start_date: eventData.startDate,

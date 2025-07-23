@@ -5,6 +5,7 @@ import EventFormModal from '@/components/events/EventFormModal'
 import { EventStorage, useEventStorageListener } from '@/lib/eventStorage'
 import { CategoryStorage, useCategoryStorageListener } from '@/lib/categoryStorage'
 import { NotificationStorage } from '@/lib/notificationStorage'
+import { apiClient } from '@/lib/api'
 import { Event, Category } from '@/types'
 
 export default function CalendarPage() {
@@ -53,8 +54,7 @@ export default function CalendarPage() {
       console.log('Calendar - Adding new event:', eventData)
 
       // Try API first
-      const { createEvent } = await import('@/lib/api')
-      const response = await createEvent({
+      const response = await apiClient.createEvent({
         title: eventData.title,
         description: eventData.description,
         start_date: eventData.startDate,
