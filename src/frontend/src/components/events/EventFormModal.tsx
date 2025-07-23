@@ -54,6 +54,9 @@ export default function EventFormModal({
     }
   }, [categories, formData.categoryId, event])
 
+  // Validation for category
+  const hasValidCategory = categories.length > 0 && formData.categoryId
+
   const reminderOptions = [
     { value: 0, label: 'Khi sự kiện bắt đầu' },
     { value: 5, label: '5 phút trước' },
@@ -68,6 +71,11 @@ export default function EventFormModal({
 
     if (!formData.title.trim()) {
       alert('Vui lòng nhập tiêu đề sự kiện')
+      return
+    }
+
+    if (!hasValidCategory) {
+      alert('Vui lòng tạo ít nhất một danh mục trước khi tạo sự kiện')
       return
     }
 
@@ -300,12 +308,25 @@ export default function EventFormModal({
                 fontSize: '0.875rem'
               }}
             >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
+              {categories.length > 0 ? (
+                categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))
+              ) : (
+                <option value="">Chưa có danh mục nào</option>
+              )}
             </select>
+            {categories.length === 0 && (
+              <p style={{
+                fontSize: '0.75rem',
+                color: '#ef4444',
+                marginTop: '0.25rem'
+              }}>
+                Vui lòng tạo danh mục trước khi tạo sự kiện
+              </p>
+            )}
           </div>
 
           {/* All Day Toggle - Only for non-repeat events */}

@@ -115,9 +115,22 @@ router.post('/register', async (req, res) => {
       updated_at: new Date()
     }).returning('id');
 
+    const actualUserId = userId.id || userId;
+
+    // Create default category for new user
+    await db('categories').insert({
+      name: 'Chung',
+      color: '#3b82f6',
+      description: 'Danh mục mặc định',
+      is_default: true,
+      user_id: actualUserId,
+      created_at: new Date(),
+      updated_at: new Date()
+    });
+
     // Generate JWT
     const token = jwt.sign(
-      { userId: userId.id || userId, email },
+      { userId: actualUserId, email },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
